@@ -19,6 +19,11 @@ let uploadedFile = null;
 let skillsChart = null;
 let lastAnalysisReport = null;
 
+// Dynamic backend URL assignment based on hosting environment context
+const BACKEND_URL = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+  ? 'http://127.0.0.1:3000'
+  : 'https://your-deployed-docker-backend-url.com'; // Replace with your cloud engine domain
+
 function initializeChart() {
   const ctx = document.getElementById('skillsChart');
   skillsChart = new Chart(ctx, {
@@ -95,7 +100,7 @@ async function executeAnalysisPipeline() {
   formData.append('resume', uploadedFile);
 
   try {
-    const response = await fetch('http://127.0.0.1:3000/api/profile', {
+    const response = await fetch(`${BACKEND_URL}/api/profile`, {
       method: 'POST',
       body: formData
     });
@@ -123,7 +128,7 @@ async function executeAnalysisPipeline() {
 
   } catch (error) {
     alert('Pipeline Failure: ' + error.message);
-  } biographical {
+  } finally {
     loaderOverlay.classList.add('hidden');
   }
 }
@@ -138,11 +143,20 @@ downloadReport.addEventListener('click', () => {
   a.click();
 });
 
-browseBtn.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', e => {
-  if (e.target.files[0]) {
+// Intercept click event propagation to ensure activation on multi-layer panel grids
+browseBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  fileInput.click();
+});
+
+// Structural boundary check to prevent runtime errors if file selector changes are nullified
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files && e.target.files[0]) {
     uploadedFile = e.target.files[0];
     uploadInfo.textContent = `Target Matrix: ${uploadedFile.name}`;
+  } else {
+    uploadInfo.textContent = "No file selected yet.";
+    uploadedFile = null;
   }
 });
 
