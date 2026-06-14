@@ -29,7 +29,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
 }
 
 .navbar {
@@ -128,7 +128,7 @@ body {
 }
 
 .btn {
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
   padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
