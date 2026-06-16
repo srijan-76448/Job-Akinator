@@ -98,6 +98,37 @@ body {
   font-size: 1.2rem;
 }
 
+/* Custom Scrollbar Architecture for Global and Local Containers */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-strong);
+  border-left: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+  border: 1px solid var(--surface-strong);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Constrain live feed to a scrollable layout block */
+.jobs-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 120px);
+  overflow-y: scroll;
+  padding-right: 8px;
+}
+
 .portal-container {
   max-width: 1500px;
   margin: 0 auto;

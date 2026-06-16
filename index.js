@@ -1,4 +1,4 @@
-// Runtime Layout Vector Initializer
+// Runtime Layout Theme Initializer
 const toggle = document.getElementById("themeToggle");
 const savedTheme = localStorage.getItem("theme") || "dark";
 document.documentElement.setAttribute("data-theme", savedTheme);
@@ -40,7 +40,7 @@ const companies = ["Helix Robotics", "Quantum Systems", "Aether FOSS Labs", "Neu
 
 const rawJobsDataset = [];
 
-// Construct exactly 54 high-density computational listings
+// Construct baseline 54 configurations (50+ Jobs)
 for (let i = 1; i <= 54; i++) {
   const domainChoice = domains[i % domains.length];
   const titleChoice = domainChoice.titles[Math.floor(Math.random() * domainChoice.titles.length)];
@@ -48,7 +48,6 @@ for (let i = 1; i <= 54; i++) {
   const locChoice = locations[Math.floor(Math.random() * locations.length)];
   const typeChoice = types[i % types.length];
   
-  // Shuffle skills array subset
   const sampleSkills = [...domainChoice.skills].sort(() => 0.5 - Math.random()).slice(0, 4);
   const compensation = `${12 + (i % 8) * 4}LPA - ${22 + (i % 10) * 5}LPA`;
 
@@ -70,13 +69,25 @@ const container = document.getElementById("jobsContainer");
 const searchInput = document.getElementById("searchInput");
 const counter = document.getElementById("matchCounter");
 
+// Fisher-Yates Reshuffle Execution Algorithm
+function ShuffleDataset(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+// Core Render Logic
 function RenderFilteredMatrix() {
   const query = searchInput.value.toLowerCase();
   
   const activeDomains = Array.from(document.querySelectorAll(".domain-filter:checked")).map(el => el.value);
   const activeTypes = Array.from(document.querySelectorAll(".type-filter:checked")).map(el => el.value);
 
-  const items = rawJobsDataset.filter(job => {
+  // Apply search/filter matrix rules first
+  let items = rawJobsDataset.filter(job => {
     const textMatch = job.title.toLowerCase().includes(query) || 
                       job.company.toLowerCase().includes(query) || 
                       job.skills.some(s => s.toLowerCase().includes(query));
@@ -85,10 +96,13 @@ function RenderFilteredMatrix() {
     return textMatch && domainMatch && typeMatch;
   });
 
+  // Reshuffle matrix state on every interaction cycle and slice down to exactly 10 nodes
+  items = ShuffleDataset(items).slice(0, 10);
+
   counter.textContent = `${items.length} Target Configurations Found`;
   container.innerHTML = "";
 
-  if(items.length === 0) {
+  if (items.length === 0) {
     container.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--text-muted); border: 1px dashed var(--border)">Zero nodes matched active pipeline definitions.</div>`;
     return;
   }
@@ -96,6 +110,7 @@ function RenderFilteredMatrix() {
   items.forEach(job => {
     const card = document.createElement("div");
     card.className = "job-card";
+    card.style.marginBottom = "16px";
     card.innerHTML = `
       <div class="job-main">
         <h2>${job.title}</h2>
